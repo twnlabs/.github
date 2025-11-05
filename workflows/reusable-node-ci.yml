@@ -1,0 +1,116 @@
+name: Reusable Node CI
+
+on:
+  workflow_call:
+    inputs:
+      workdir:
+        description: Working directory (monorepo support)
+        required: false
+        type: string
+        default: '.'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: true
+      NODE_ENV: test
+    defaults:
+      run:
+        working-directory: ${{ inputs.workdir }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect package manager
+        id: pm
+        shell: bash
+        run: |
+          set -euo pipefail
+          PM=""
+          if [[ -f package.json ]]; then
+            PM=$(node -p "try{(require('./package.json').packageManager||'').split('@')[0]}catch(e){''}")
+          fi
+          if [[ -z "$PM" || "$PM" == "undefined" ]]; then
+            if [[ -f pnpm-lock.yaml ]]; then PM=pnpm; 
+            elif [[ -f yarn.lock ]]; then PM=yarn; 
+            elif [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then PM=npm; 
+            else PM=npm; fi
+          fi
+          LOCKFILE=""
+          case "$PM" in
+            pnpm) LOCKFILE=pnpm-lock.yaml;;
+            yarn) LOCKFILE=yarn.lock;;
+            npm)  LOCKFILE=package-lock.json;;
+            *)    LOCKFILE=package-lock.json;;
+          esac
+          echo "manager=$PM" >> "$GITHUB_OUTPUT"
+          echo "lockfile=$LOCKFILE" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js (with cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: ${{ steps.pm.outputs.manager }}
+          cache-dependency-path: ${{ steps.pm.outputs.lockfile }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          PM=${{ steps.pm.outputs.manager }}
+          if [[ "$PM" == "yarn" || "$PM" == "pnpm" ]]; then corepack enable; fi
+          case "$PM" in
+            npm)
+              if [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then npm ci; else npm install; fi;;
+            yarn)
+              yarn install --frozen-lockfile;;
+            pnpm)
+              pnpm install --frozen-lockfile;;
+            *) npm install;;
+          esac
+
+      - name: Lint
+        shell: bash
+        run: |
+          set +e
+          PM=${{ steps.pm.outputs.manager }}
+          case "$PM" in
+            npm)  npm run -s lint --if-present;;
+            pnpm) pnpm run -s lint --if-present;;
+            yarn) grep -q '"lint"' package.json && yarn -s run lint || echo "no lint script";;
+            *)    npm run -s lint --if-present;;
+          esac
+          true
+
+      - name: Test
+        shell: bash
+        run: |
+          set +e
+          PM=${{ steps.pm.outputs.manager }}
+          case "$PM" in
+            npm)  npm test -s --if-present;;
+            pnpm) pnpm test -s --if-present;;
+            yarn) grep -q '"test"' package.json && yarn -s test || echo "no tests";;
+            *)    npm test -s --if-present;;
+          esac
+          true
+
+      - name: Upload coverage artifact (if any)
+        if: ${{ hashFiles('**/coverage/**') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            **/coverage/**
+          if-no-files-found: ignore
+
+

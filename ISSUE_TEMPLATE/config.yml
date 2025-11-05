@@ -1,0 +1,13 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://twnlabs.com/security
+    about: Please report security issues privately.
+  - name: Docs & API Questions
+    url: https://docs.twnlabs.com
+    about: Find documentation and API references.
+  - name: Community Discord
+    url: https://discord.gg/xTtc6ZFdSN
+    about: Ask quick questions and get help from the community.
+
+

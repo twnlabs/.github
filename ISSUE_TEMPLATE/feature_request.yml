@@ -1,0 +1,56 @@
+name: Feature request
+description: Suggest an idea or improvement
+labels: [enhancement]
+title: "[Feature]: "
+body:
+  - type: checkboxes
+    id: prior_search
+    attributes:
+      label: Did you search first?
+      description: Please confirm you've searched existing issues and discussions.
+      options:
+        - label: I searched for existing issues and couldn't find a match
+          required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Impact / priority
+      options:
+        - P0 – Blocker
+        - P1 – High
+        - P2 – Normal
+        - P3 – Low
+      default: 2
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What problem does this solve? What’s the proposed solution?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope / acceptance criteria
+      placeholder: |
+        - Must do X
+        - Should do Y
+        - Won’t do Z (out of scope)
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+  - type: checkboxes
+    id: coc
+    attributes:
+      label: Code of Conduct
+      description: By submitting, you agree to follow our Code of Conduct.
+      options:
+        - label: I agree to follow the Code of Conduct
+          required: true
+
+

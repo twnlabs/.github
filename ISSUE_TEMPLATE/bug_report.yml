@@ -1,0 +1,82 @@
+name: Bug report
+description: Report a reproducible problem
+labels: [bug]
+title: "[Bug]: "
+body:
+  - type: checkboxes
+    id: prior_search
+    attributes:
+      label: Did you search first?
+      description: Please confirm you've searched existing issues and discussions.
+      options:
+        - label: I searched for existing issues and couldn't find a match
+          required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Impact / priority
+      options:
+        - P0 – Blocker
+        - P1 – High
+        - P2 – Normal
+        - P3 – Low
+      default: 2
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Provide a minimal, complete, and verifiable example
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See error ...
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - iOS
+        - Android
+        - Other
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: e.g., v1.2.3 or abcdef1
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      render: shell
+  - type: checkboxes
+    id: coc
+    attributes:
+      label: Code of Conduct
+      description: By submitting, you agree to follow our Code of Conduct.
+      options:
+        - label: I agree to follow the Code of Conduct
+          required: true
+
+
