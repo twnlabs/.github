@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://twnlabs.com/assets/og/twnlabs_for_developers_og.jpg" alt="TWN Labs — Identity‑Native AI Twin Platform" width="720">
+  <img src="https://twnlabs.com/assets/banners/twnlabs_for_developers.jpg" alt="TWN Labs — Identity‑Native AI Twin Platform" width="720">
 </p>
 
 <h1 align="center">TWN Labs</h1>
